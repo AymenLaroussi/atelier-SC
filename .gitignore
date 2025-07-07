@@ -27,3 +27,4 @@ instance/
 
 .vscode
 .idea
+*/__pycache__

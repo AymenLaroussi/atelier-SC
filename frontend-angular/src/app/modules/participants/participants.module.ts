@@ -5,12 +5,16 @@ import { ParticipantsRoutingModule } from './participants-routing.module';
 import { ParticipantsComponent } from './participants.component';
 import { RegisterComponent } from './register/register.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { ListParticipantsComponent } from './list/listParticipants.component';
+import { LoginComponent } from './login/login.component';
 
 
 @NgModule({
   declarations: [
     ParticipantsComponent,
-    RegisterComponent
+    RegisterComponent,
+    ListParticipantsComponent,
+    LoginComponent
   ],
   imports: [
     CommonModule,

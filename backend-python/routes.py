@@ -2,16 +2,18 @@ from flask import Blueprint, request, jsonify
 from models import db, Participant
 import requests
 from config import Config
+import bcrypt
+import datetime
 
 api = Blueprint('api', __name__)
 
-@api.route('/register', methods=['POST'])
-def register():
-    data = request.json
-    participant = Participant(nom=data['nom'], email=data['email'])
-    db.session.add(participant)
-    db.session.commit()
-    return jsonify({'message': 'Participant enregistré avec succès'}), 201
+# @api.route('/register', methods=['POST'])
+# def register():
+#     data = request.json
+#     participant = Participant(nom=data['nom'], email=data['email'])
+#     db.session.add(participant)
+#     db.session.commit()
+#     return jsonify({'message': 'Participant enregistré avec succès'}), 201
 
 
 @api.route('/ateliers', methods=['GET'])
@@ -22,26 +24,64 @@ def list_ateliers():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@api.route('/login', methods=['POST'])
+def login_participant():
+    data = request.get_json()
+    email = data.get('email')
+    password = data.get('password')
 
-@api.route('/inscription', methods=['POST'])
-def inscrire_atelier():
-    data = request.json
-    atelier_id = data['atelier_id']
-    participant_id = data['participant_id']
-    
-    try:
-        response = requests.post(
-            f"{Config.LARAVEL_API_URL}/ateliers/{atelier_id}/formateurs/1",  # assuming 1 formateur
-            headers={"Accept": "application/json"}
-        )
+    if not email or not password:
+        return jsonify({'error': 'Email and password are required'}), 400
 
-        # manually insert into pivot if Laravel doesn’t handle inscription
-        db.session.execute("""
-            INSERT INTO atelier_participant (atelier_id, participant_id)
-            VALUES (:atelier_id, :participant_id)
-        """, {'atelier_id': atelier_id, 'participant_id': participant_id})
-        db.session.commit()
+    user = db.session.execute(
+        db.text("SELECT * FROM users WHERE email = :email"),
+        {'email': email}
+    ).fetchone()
 
-        return jsonify({'message': 'Inscription réussie'}), 200
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+
+    if not bcrypt.checkpw(password.encode(), user.password.encode()):
+        return jsonify({'error': 'Incorrect password'}), 401
+
+    return jsonify({'id': user.id}), 200
+
+@api.route('/register', methods=['POST'])
+def register_participant():
+    data = request.get_json()
+    nom = data.get('nom')
+    email = data.get('email')
+    password = data.get('password')
+
+    if not nom or not email or not password:
+        return jsonify({'error': 'All fields are required'}), 400
+
+    existing_user = db.session.execute(
+        db.text("SELECT * FROM users WHERE email = :email"),
+        {'email': email}
+    ).fetchone()
+
+    if existing_user:
+        return jsonify({'error': 'Email already registered'}), 409
+
+    new_participant = Participant(nom=nom, email=email)
+    db.session.add(new_participant)
+    db.session.flush()  
+
+    hashed_pw = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+
+    db.session.execute(
+        db.text("""
+            INSERT INTO users (name, email, password)
+            VALUES (:name, :email, :password)
+        """),
+        {
+            'name': nom,
+            'email': email,
+            'password': hashed_pw
+        }
+    )
+
+    db.session.commit()
+    return jsonify({'message': 'Participant registered successfully'}), 201
+

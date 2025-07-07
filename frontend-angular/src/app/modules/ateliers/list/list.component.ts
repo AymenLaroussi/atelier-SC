@@ -6,10 +6,11 @@ import { ParticipantService } from 'src/app/core/services/participant.service';
 @Component({
   selector: 'app-list',
   templateUrl: './list.component.html',
+  styleUrls: ['./list.component.css'],
 })
 export class ListComponent implements OnInit {
   ateliers: Atelier[] = [];
-  participantId: number | null = null; 
+  participantId: number | null = null;
   message = '';
 
   constructor(
@@ -18,7 +19,19 @@ export class ListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.loadLoggedUser();    // ✅ Check if user is logged in
     this.loadAteliers();
+  }
+
+  loadLoggedUser(): void {
+    const userData = localStorage.getItem('user');
+
+    if (userData) {
+      const user = JSON.parse(userData);
+      this.participantId = user?.id || null;
+    } else {
+      this.participantId = null;
+    }
   }
 
   loadAteliers(): void {
@@ -30,13 +43,14 @@ export class ListComponent implements OnInit {
 
   registerToAtelier(atelierId: number): void {
     if (!this.participantId) {
-      this.message = "Veuillez vous inscrire d'abord comme participant.";
+      this.message = "Veuillez vous connecter d'abord pour vous inscrire à un atelier.";
       return;
     }
 
     this.participantService.registerToAtelier(atelierId, this.participantId).subscribe({
       next: () => {
         this.message = "Inscription à l'atelier réussie !";
+        this.loadAteliers();
       },
       error: () => {
         this.message = "Erreur lors de l'inscription à l'atelier.";

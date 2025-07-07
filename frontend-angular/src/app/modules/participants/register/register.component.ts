@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ParticipantService } from 'src/app/core/services/participant.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
+  styleUrls: ['./register.component.css'],
 })
 export class RegisterComponent implements OnInit {
   registerForm!: FormGroup;
@@ -13,13 +15,15 @@ export class RegisterComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private participantService: ParticipantService
+    private participantService: ParticipantService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
     this.registerForm = this.fb.group({
       nom: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required]],
     });
   }
 
@@ -33,15 +37,13 @@ export class RegisterComponent implements OnInit {
       return;
     }
 
-    this.participantService.registerParticipant(this.registerForm.value).subscribe({
-      next: () => {
-        this.message = "Inscription réussie !";
-        this.registerForm.reset();
-        this.submitted = false;
-      },
-      error: () => {
-        this.message = "Erreur lors de l'inscription.";
-      }
+    this.participantService.registerParticipant({
+      nom: this.registerForm.value.nom,
+      email: this.registerForm.value.email,
+      password: this.registerForm.value.password
+    }).subscribe({
+      next: () => this.router.navigate(['/login']),
+      error: (err) => console.error(err)
     });
   }
 }

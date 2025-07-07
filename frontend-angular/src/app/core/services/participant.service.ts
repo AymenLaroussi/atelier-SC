@@ -7,15 +7,24 @@ import { Participant } from 'src/app/shared/models';
   providedIn: 'root'
 })
 export class ParticipantService {
-  private apiUrl = 'http://localhost:8000/api';  
+  private laravelApiUrl = 'http://localhost:8000/api';  
+  private flaskApi = 'http://localhost:5000'
 
   constructor(private http: HttpClient) {}
 
   registerParticipant(participant: Participant): Observable<Participant> {
-    return this.http.post<Participant>(`${this.apiUrl}/participants`, participant);
+    return this.http.post<Participant>(`${this.flaskApi}/register`, participant);
   }
 
   registerToAtelier(atelierId: number, participantId: number): Observable<any> {
-    return this.http.post(`${this.apiUrl}/ateliers/${atelierId}/participants/${participantId}`, {});
+    return this.http.post(`${this.laravelApiUrl}/ateliers/${atelierId}/participants/${participantId}`, {});
+  }
+
+  getParticipants(): Observable<Participant[]> {
+    return this.http.get<Participant[]>(`${this.laravelApiUrl}/participants`);
+  }
+
+  login(credentials: { email: string; password: string }): Observable<any> {
+    return this.http.post(`${this.flaskApi}/login`, credentials);
   }
 }

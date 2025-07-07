@@ -5,6 +5,8 @@ use App\Http\Controllers\Api\AtelierController;
 use App\Http\Controllers\FormateurAtelierController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\ParticipantController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -37,17 +39,15 @@ Route::group([
 
     Route::post('ateliers/{atelier}/formateurs/{formateur}', [AtelierController::class, 'assignFormateur']);
 
-    // Formateur Routes
+
     Route::group(['prefix' => 'formateur'], function () {
-        // View ateliers they animate
         Route::get('ateliers', [FormateurAtelierController::class, 'index']);
-
-        // View participants for their ateliers
         Route::get('ateliers/{atelier}/participants', [FormateurAtelierController::class, 'participants']);
+        
     });
-
-
-
+    Route::get('ateliers/{atelier}/participants/{participant}', [ParticipantController::class, 'participants']);
+    Route::get('/participants', [ParticipantController::class, 'index']);
+    Route::post('/participants', [ParticipantController::class, 'store']);
 
 
 });
