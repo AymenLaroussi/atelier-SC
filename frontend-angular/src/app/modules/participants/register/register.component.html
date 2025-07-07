@@ -1,0 +1,22 @@
+<div class="container">
+    <h2>Inscription Participant</h2>
+  
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="form">
+      <div class="form-group">
+        <label>Nom:</label>
+        <input formControlName="nom" type="text" class="form-control" />
+        <div class="error" *ngIf="submitted && f['nom'].errors">Nom requis.</div>
+      </div>
+  
+      <div class="form-group">
+        <label>Email:</label>
+        <input formControlName="email" type="email" class="form-control" />
+        <div class="error" *ngIf="submitted && f['email'].errors">Email invalide.</div>
+      </div>
+  
+      <button type="submit" class="btn">S'inscrire</button>
+    </form>
+  
+    <div class="message" *ngIf="message">{{ message }}</div>
+  </div>
+  

@@ -1,0 +1,15 @@
+<div class="container">
+    <h2>Liste des Ateliers</h2>
+  
+    <div *ngIf="message" class="message">{{ message }}</div>
+  
+    <div *ngFor="let atelier of ateliers" class="atelier-card">
+      <h3 class="titre">{{ atelier.titre }}</h3>
+      <p><strong>Description:</strong> {{ atelier.description || 'Aucune description.' }}</p>
+      <p><strong>Date:</strong> {{ atelier.created }}</p>
+      <button (click)="registerToAtelier(atelier.id)" class="btn">
+        S'inscrire
+      </button>
+    </div>
+  </div>
+  
