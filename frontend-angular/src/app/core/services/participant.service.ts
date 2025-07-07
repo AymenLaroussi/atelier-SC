@@ -17,7 +17,7 @@ export class ParticipantService {
   }
 
   registerToAtelier(atelierId: number, participantId: number): Observable<any> {
-    return this.http.post(`${this.laravelApiUrl}/ateliers/${atelierId}/participants/${participantId}`, {});
+    return this.http.post(`${this.laravelApiUrl}/atelier/${atelierId}/participant/${participantId}`,'');
   }
 
   getParticipants(): Observable<Participant[]> {

@@ -45,7 +45,7 @@ Route::group([
         Route::get('ateliers/{atelier}/participants', [FormateurAtelierController::class, 'participants']);
         
     });
-    Route::get('ateliers/{atelier}/participants/{participant}', [ParticipantController::class, 'participants']);
+    Route::post('atelier/{atelier}/participant/{participant}', [ParticipantController::class, 'AtelierParticipants']);
     Route::get('/participants', [ParticipantController::class, 'index']);
     Route::post('/participants', [ParticipantController::class, 'store']);
 

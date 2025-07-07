@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Participant;
 use Illuminate\Http\Request;
+use App\Models\Atelier;
 
 class ParticipantController extends Controller
 {
@@ -23,6 +24,23 @@ class ParticipantController extends Controller
         $participant = Participant::create($validated);
 
         return response()->json($participant, 201);
+    }
+
+    public function AtelierParticipants($atelierId, $participantId)
+    {
+        $atelier = Atelier::with('participants')->find($atelierId);
+
+        if (!$atelier) {
+            return response()->json(['error' => 'Atelier not found'], 404);
+        }
+
+        $isRegistered = $atelier->participants()->where('participants.id', $participantId)->exists();
+
+        return response()->json([
+            'participant_id' => $participantId,
+            'atelier_id' => $atelierId,
+            'is_registered' => $isRegistered
+        ]);
     }
 
 }
