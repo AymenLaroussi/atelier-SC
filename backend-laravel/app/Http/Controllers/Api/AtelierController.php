@@ -24,6 +24,8 @@ class AtelierController extends Controller
             'description' => 'nullable|string',
             'formateur_id' => 'required|exists:formateurs,id',
         ]);
+        $data['created_at'] = now();
+        $data['updated_at'] = now();
 
         $atelier = Atelier::create($data);
         return response()->json($atelier, 201);

@@ -11,10 +11,12 @@ import { CoreModule } from './core/core.module';
 // Feature Modules
 import { ParticipantsModule } from './modules/participants/participants.module';
 import { AteliersModule } from './modules/ateliers/ateliers.module';
+import { NavbarComponent } from './modules/navbar/navbar.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    NavbarComponent,
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,19 @@
+<nav class="navbar">
+    <ul class="nav-left">
+      <li><a routerLink="/">Accueil</a></li>
+      <li><a routerLink="/participants">Participants</a></li>
+      <li><a routerLink="/ateliers">Ateliers</a></li>
+    </ul>
+  
+    <ul class="nav-right">
+        <ng-container *ngIf="!isLoggedIn(); else loggedInTemplate">
+          <li><a routerLink="/login">Connexion</a></li>
+          <li><a routerLink="/participants/register">Inscription</a></li>
+        </ng-container>
+      
+        <ng-template #loggedInTemplate>
+          <li><a href="#" (click)="logout(); $event.preventDefault()">Déconnexion</a></li>
+        </ng-template>
+    </ul>
+  </nav>
+  

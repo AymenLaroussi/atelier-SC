@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Participant;
 use Illuminate\Http\Request;
 use App\Models\Atelier;
+use App\Models\User;
 
 class ParticipantController extends Controller
 {
@@ -28,20 +29,40 @@ class ParticipantController extends Controller
 
     public function AtelierParticipants($atelierId, $participantId)
     {
-        $atelier = Atelier::with('participants')->find($atelierId);
+        $user = \App\Models\User::find($participantId);
+        if (!$user) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
 
+        $participant = \App\Models\Participant::where('email', $user->email)->first();
+        if (!$participant) {
+            return response()->json(['error' => 'No matching participant found for this user'], 404);
+        }
+
+        $atelier = \App\Models\Atelier::find($atelierId);
         if (!$atelier) {
             return response()->json(['error' => 'Atelier not found'], 404);
         }
 
-        $isRegistered = $atelier->participants()->where('participants.id', $participantId)->exists();
+        $isRegistered = $atelier->participants()->where('participants.id', $participant->id)->exists();
+
+        if ($isRegistered) {
+            return response()->json([
+                'message' => 'Participant is already registered to this workshop.'
+            ], 200);
+        }
+
+        $atelier->participants()->attach($participant->id);
 
         return response()->json([
-            'participant_id' => $participantId,
             'atelier_id' => $atelierId,
-            'is_registered' => $isRegistered
-        ]);
+            'participant_id' => $participant->id,
+            'is_registered' => true,
+            'message' => 'Participant successfully registered to the atelier.'
+        ], 201);
     }
+
+
 
 }
 

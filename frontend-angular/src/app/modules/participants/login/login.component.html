@@ -1,22 +1,26 @@
-<h2>Login</h2>
-<form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-  <div>
-    <label for="email">Email:</label>
-    <input id="email" formControlName="email" type="email" />
-    <div *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
-      Email is required and must be valid.
+<div class="login-container">
+  <h2>Connexion</h2>
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
+    <div class="form-group">
+      <label for="email">Email :</label>
+      <input id="email" formControlName="email" type="email" placeholder="Entrez votre email" />
+      <div class="error" *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+        L'email est requise et doit être valide.
+      </div>
     </div>
-  </div>
 
-  <div>
-    <label for="password">Password:</label>
-    <input id="password" formControlName="password" type="password" />
-    <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
-      Password is required.
+    <div class="form-group">
+      <label for="password">Mot de passe :</label>
+      <input id="password" formControlName="password" type="password" placeholder="Entrez votre mot de passe" />
+      <div class="error" *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+        Le mot de passe est requis.
+      </div>
     </div>
-  </div>
 
-  <button type="submit" [disabled]="loginForm.invalid">Login</button>
+    <button type="submit" [disabled]="loginForm.invalid" class="btn-login">
+      Se connecter
+    </button>
 
-  <p *ngIf="errorMessage" style="color: red;">{{ errorMessage }}</p>
-</form>
+    <p class="error-message" *ngIf="errorMessage">{{ errorMessage }}</p>
+  </form>
+</div>

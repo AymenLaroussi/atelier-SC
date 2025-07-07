@@ -9,9 +9,19 @@ import { ParticipantService } from 'src/app/core/services/participant.service';
   styleUrls: ['./list.component.css'],
 })
 export class ListComponent implements OnInit {
+  
   ateliers: Atelier[] = [];
   participantId: number | null = null;
   message = '';
+
+  toastMessage: string | null = null;
+  toastColor: string = '#5CE65C';
+
+  showPopup = false;
+  popupParticipants: any[] = [];
+  registeredAteliersArray: number[] = [];
+
+  maxParticipants = 20;
 
   constructor(
     private atelierService: AtelierService,
@@ -19,8 +29,17 @@ export class ListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.loadLoggedUser();    // ✅ Check if user is logged in
+    this.loadLoggedUser();    
     this.loadAteliers();
+    const registered = localStorage.getItem('user');
+    if (registered) {
+      try {
+        this.registeredAteliersArray = JSON.parse(registered);
+      } catch (e) {
+        console.error('Invalid localStorage data');
+        this.registeredAteliersArray = [];
+      }
+    }
   }
 
   loadLoggedUser(): void {
@@ -36,25 +55,63 @@ export class ListComponent implements OnInit {
 
   loadAteliers(): void {
     this.atelierService.getAteliers().subscribe({
-      next: (data: Atelier[]) => this.ateliers = data,
+      next: (data: Atelier[]) => {
+        this.ateliers = data.map(atelier => ({
+          ...atelier,
+          isRegistered: atelier.participants?.some(participant => participant.id === this.participantId) || false
+        }));
+      },
       error: (err) => console.error(err),
     });
   }
 
   registerToAtelier(atelierId: number): void {
     if (!this.participantId) {
-      this.message = "Veuillez vous connecter d'abord pour vous inscrire à un atelier.";
+      this.showToast("Veuillez vous connecter d'abord pour vous inscrire à un atelier.");
       return;
     }
 
     this.participantService.registerToAtelier(atelierId, this.participantId).subscribe({
       next: () => {
-        this.message = "Inscription à l'atelier réussie !";
+        this.showToast("Inscription à l'atelier réussie !");
         this.loadAteliers();
       },
       error: () => {
-        this.message = "Erreur lors de l'inscription à l'atelier.";
+        this.showToast("Erreur lors de l'inscription à l'atelier.");
       }
     });
+  }
+
+  getRandomColor(seed: number): string {
+    const colors = [
+      '#a8dadc', '#f4a261', '#e76f51', '#2a9d8f', '#264653', '#f4d35e'
+    ];
+    return colors[seed % colors.length];
+  }
+
+  getParticipantProgress(atelier: Atelier): number {
+    if (!atelier.participants) return 0;
+    const count = atelier.participants.length;
+    return Math.min(100, (count / this.maxParticipants) * 100);
+  }
+
+  showToast(message: string): void {
+    this.toastMessage = message;
+    setTimeout(() => {
+      this.toastMessage = null;
+    }, 3000);
+  }
+
+  openParticipantsPopup(participants: any[]): void {
+    this.popupParticipants = participants;
+    this.showPopup = true;
+  }
+
+  closePopup(): void {
+    this.showPopup = false;
+  }
+
+  isUserRegistered(atelierId: number): boolean {
+    return this.registeredAteliersArray.includes(atelierId);
   }
 }

@@ -1,30 +1,52 @@
-<div class="container">
-  <h2>Liste des Ateliers</h2>
+<div class="courses-container">
+  <div *ngFor="let atelier of ateliers" class="course">
+      <div class="course-preview" [style.background]="getRandomColor(atelier.id)">
+        <h6>Atelier</h6>
+        <h2>{{ atelier.titre }}</h2>
+        <a href="#">Voir les détails <i class="fas fa-chevron-right"></i></a>
 
-  <div *ngIf="message" class="message">{{ message }}</div>
+       
+       
+        <button class="btn1"  (click)="registerToAtelier(atelier.id)">S'inscrire</button>
+      
+      </div>
 
-  <div *ngFor="let atelier of ateliers" class="atelier-card">
-    <h3 class="titre">Titre : {{ atelier.titre }}</h3>
+      <div class="course-info">
+        <div class="progress-container">
+          <div class="progress" [style.width]="getParticipantProgress(atelier) + '%'"></div>
+          <span class="progress-text">
+            {{ atelier.participants?.length || 0 }} participant(s)
+          </span>
+        </div>
 
-    <p><strong>Description :</strong> {{ atelier.description || 'Aucune description.' }}</p>
+        <h6>{{ atelier.created_at ? (atelier.created_at | date: 'mediumDate') : 'Date inconnue' }}</h6>
+        <h2>{{ atelier.description || 'Aucune description.' }}</h2>
 
-    <p><strong>Date de création :</strong> {{ atelier.created_at | date: 'medium' }}</p>
+        <p *ngIf="atelier.formateur">
+          <strong>Formateur :</strong> <li>{{ atelier.formateur.nom }}</li>
+        </p>
 
-    <p *ngIf="atelier.formateur">
-      <strong>Formateur :</strong> {{ atelier.formateur.nom }} ({{ atelier.formateur.email }})
-    </p>
+        <button class="btn" (click)="openParticipantsPopup(atelier.participants || [])">Voir participants</button>
+      
 
-    <div *ngIf="atelier.participants?.length">
-      <strong>Participants :</strong>
-      <ul>
-        <li *ngFor="let participant of atelier.participants">
-          {{ participant.nom }} ({{ participant.email }})
-        </li>
-      </ul>
-    </div>
+      </div>
+  </div>
+</div>
 
-    <button (click)="registerToAtelier(atelier.id)" class="btn">
-      S'inscrire
-    </button>
+<!-- Toast message -->
+<div *ngIf="toastMessage" [ngStyle]="{'background-color': toastColor}" class="toast">
+  {{ toastMessage }}
+</div>
+
+<!-- Participants popup -->
+<div *ngIf="showPopup" class="popup-overlay" (click)="closePopup()">
+  <div class="popup" (click)="$event.stopPropagation()">
+    <h3>Participants</h3>
+    <ul>
+      <li *ngFor="let participant of popupParticipants">
+        {{ participant.nom }}
+      </li>
+    </ul>
+    <button class="btn" (click)="closePopup()">Fermer</button>
   </div>
 </div>
