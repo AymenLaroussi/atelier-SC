@@ -1,16 +1,14 @@
 <div class="courses-container">
+  <div *ngIf="ateliers.length === 0" class="no-ateliers-message">
+    Vous n'avez pas été assigné à un atelier.
+  </div>
   <div *ngFor="let atelier of ateliers" class="course">
       <div class="course-preview" [style.background]="getRandomColor(atelier.id)">
         <h6>Atelier</h6>
         <h2>{{ atelier.titre }}</h2>
         <a href="#">Voir les détails <i class="fas fa-chevron-right"></i></a>
-
-       
-       
         <button class="btn1"  (click)="registerToAtelier(atelier.id)">S'inscrire</button>
-      
       </div>
-
       <div class="course-info">
         <div class="progress-container">
           <div class="progress" [style.width]="getParticipantProgress(atelier) + '%'"></div>
@@ -18,27 +16,19 @@
             {{ atelier.participants?.length || 0 }} participant(s)
           </span>
         </div>
-
         <h6>{{ atelier.created_at ? (atelier.created_at | date: 'mediumDate') : 'Date inconnue' }}</h6>
         <h2>{{ atelier.description || 'Aucune description.' }}</h2>
 
         <p *ngIf="atelier.formateur">
           <strong>Formateur :</strong> <li>{{ atelier.formateur.nom }}</li>
         </p>
-
         <button class="btn" (click)="openParticipantsPopup(atelier.participants || [])">Voir participants</button>
-      
-
       </div>
   </div>
 </div>
-
-<!-- Toast message -->
 <div *ngIf="toastMessage" [ngStyle]="{'background-color': toastColor}" class="toast">
   {{ toastMessage }}
 </div>
-
-<!-- Participants popup -->
 <div *ngIf="showPopup" class="popup-overlay" (click)="closePopup()">
   <div class="popup" (click)="$event.stopPropagation()">
     <h3>Participants</h3>

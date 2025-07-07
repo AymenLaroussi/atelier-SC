@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Atelier;
 use App\Models\Formateur;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class AtelierController extends Controller
@@ -64,18 +65,35 @@ class AtelierController extends Controller
 
     public function assignFormateur($atelierId, $formateurId)
     {
-        // Find the atelier and formateur by their IDs
         $atelier = Atelier::findOrFail($atelierId);
         $formateur = Formateur::findOrFail($formateurId);
 
-        // Assign the formateur to the atelier
         $atelier->formateur()->associate($formateur);
         $atelier->save();
 
         return response()->json([
             'message' => 'Formateur assigned to Atelier successfully.',
-            'atelier' => $atelier->load('formateur'), // eager load formateur relation
+            'atelier' => $atelier->load('formateur'),
         ]);
     }
+
+    public function getAteliersByUserId($userId)
+    {
+        $user = User::find($userId);
+        if (!$user) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+
+        $ateliers = Atelier::with(['formateur'])
+            ->whereHas('formateur', function($query) use ($user) {
+                $query->where('email', $user->email);
+            })
+            ->get();
+
+        return response()->json($ateliers);
+    }
+
+
+
 }
 

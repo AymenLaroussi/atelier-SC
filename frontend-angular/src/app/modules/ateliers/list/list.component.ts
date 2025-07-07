@@ -54,14 +54,40 @@ export class ListComponent implements OnInit {
   }
 
   loadAteliers(): void {
+    const userData = localStorage.getItem('user');
+    if (!userData) {
+      this.loadAllAteliers();
+      return;
+    }
+    const user = JSON.parse(userData);
+    const userId = user.id;
+  
+    this.atelierService.getAteliersByFormateur(userId).subscribe({
+      next: (data: Atelier[]) => {
+        // Always assign data from backend (even if empty array)
+        this.ateliers = data.map(atelier => ({
+          ...atelier,
+          isRegistered: atelier.participants?.some(p => p.id === userId) || false
+        }));
+        // No fallback to loadAllAteliers here since call succeeded
+      },
+      error: (err) => {
+        console.error('Error fetching ateliers by formateur:', err);
+        // Only if error, load all ateliers
+        this.loadAllAteliers();
+      }
+    });
+  }
+  
+  loadAllAteliers(): void {
     this.atelierService.getAteliers().subscribe({
       next: (data: Atelier[]) => {
         this.ateliers = data.map(atelier => ({
           ...atelier,
-          isRegistered: atelier.participants?.some(participant => participant.id === this.participantId) || false
+          isRegistered: atelier.participants?.some(p => p.id === this.participantId) || false
         }));
       },
-      error: (err) => console.error(err),
+      error: (err) => console.error('Error loading all ateliers:', err),
     });
   }
 
