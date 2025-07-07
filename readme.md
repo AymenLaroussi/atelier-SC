@@ -1,4 +1,4 @@
-# 🎨 Atelier 999 - Fullstack Project
+# 🎨 Plateforme de gestion d’ateliers de formation - Fullstack Project
 
 Application de gestion d'ateliers avec **inscription**, **consultation** et **système modulaire**. Ce projet est structuré en 3 parties :  
 
