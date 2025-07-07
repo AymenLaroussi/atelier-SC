@@ -37,7 +37,14 @@ php artisan serve
 | Méthode | URL                 | Description              |
 |--------|---------------------|--------------------------|
 | GET    | `/api/ateliers`     | Lister tous les ateliers |
-| POST   | `/api/ateliers`     | Créer un atelier         |
+| POST   | `/api/ateliers`     | Créer un Atelier         |
+| PUT    | `/api/atelier/{ID}` | Mettre à jour un Atelier |
+| DELETE | `/api/ateliers/{ID}` | Supprimer un Atelier  |
+| POST   | `/api/atelier/{atelier}/participant/{participant}` | Liste atelier par participant |
+| GET   | `/api/participants` | Lister les participants |
+| POST   | `/api/participants` | Créer un participant |
+| GET    | `/atelier/formateur/{formateur}` | Lister les atelier par formateur |
+
 
 
 ---
@@ -73,13 +80,50 @@ SQLALCHEMY_DATABASE_URI = 'mysql://root:@localhost/sc'
 
 ### 🌐 Endpoints principaux
 
-| Méthode | URL                 | Description                      |
-|--------|---------------------|----------------------------------|
-| POST   | `/register`         | Enregistrer un participant       |
-| POST   | `/login`      | Se connecter |
-| GET    | `/ateliers`         | Liste des ateliers (via Laravel) |
-| GET    | `/atelier/{id}/formateur/{id}`         | assigner atelier to formateur |
+| Méthode | URL        | Description    |
+|--------|-------------|----------------|
+| POST   | `/register` | Crée un compte |
+| POST   | `/login`    | Se connecter   |
 
+
+## Payload 
+### Ateliers
+```bash
+    {
+        "titre": string,
+        "description": string,
+        "created_at": datetime,
+        "updated_at": datetime
+    },
+```
+### Participants
+```bash
+    { 
+        "nom": string,
+        "email": string,
+        "created_at": datetime,
+        "updated_at": datetime
+    }  
+```
+### Formateurs
+```bash
+    { 
+        "nom": string,
+        "email": string,
+        "created_at": datetime,
+        "updated_at": datetime
+    }  
+```
+### Users
+```bash
+    { 
+        "name": string,
+        "email": string,
+        "password": string,
+        "created_at": datetime,
+        "updated_at": datetime
+    }  
+```
 ---
 
 ## 🅰️ Frontend - Angular (Formulaires + UI)
@@ -102,13 +146,14 @@ ng serve
 
 
 
-### 🌐 Services HTTP
+### 🌐 Routes
 
 ```ts
-this.http.post('http://localhost:5000/register', formData);
-this.http.get('http://localhost:8000/api/ateliers');
-this.http.get('http://localhost:5000/participants');
-this.http.post('http://localhost:5000/login', formData);
+'http://localhost:5000/participants/register'
+'http://localhost:5000/login'
+'http://localhost:8000/api/ateliers'
+'http://localhost:5000/participants'
+
 
 
 ## 🧪 Tests rapides

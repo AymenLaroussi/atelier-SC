@@ -34,6 +34,7 @@ Route::group([
     });
 
 
+    Route::put('ateliers/{atelier}', [AtelierController::class, 'update']);
 
     Route::apiResource('ateliers', AtelierController::class);
 
