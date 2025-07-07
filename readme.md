@@ -41,9 +41,9 @@ php artisan serve
 | PUT    | `/api/atelier/{ID}` | Mettre à jour un Atelier |
 | DELETE | `/api/ateliers/{ID}` | Supprimer un Atelier  |
 | POST   | `/api/atelier/{atelier}/participant/{participant}` | Liste atelier par participant |
-| GET   | `/api/participants` | Lister les participants |
+| GET   , | `/api/participants` | Lister les participants |
 | POST   | `/api/participants` | Créer un participant |
-| GET    | `/atelier/formateur/{formateur}` | Lister les atelier par formateur |
+| GET    | `/api/atelier/formateur/{formateur}` | Lister les atelier par formateur |
 
 
 
@@ -159,7 +159,7 @@ ng serve
 ## 🧪 Tests rapides
 
 1. 🧠 Démarrer le backend Laravel : `php artisan serve`
-2. 🐍 Démarrer Flask : `python app.py`
+2. 🐍 Démarrer Flask : `python run.py`
 3. 🅰️ Lancer Angular : `ng serve`
 4. Accéder à `http://localhost:4200`
 
